@@ -1,6 +1,5 @@
 CC = icpc
 CFLAGS = -diag-disable=10441 -O3 -std=c++11
-#-D_DEBUG
 #OMP = -qopenmp
 OMP =
 

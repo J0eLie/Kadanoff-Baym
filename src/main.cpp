@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
   // ======================================================================== //
   //                                PARAMETERS                                //
   // ======================================================================== //
-  if(argc != 2){
+  if(argc < 2 ){
     printf("Invalid number of command line arguments\n");
     return 0;
   }
@@ -27,6 +27,9 @@ int main(int argc, char *argv[])
   // time grid
   int ntimes = atoi(argv[1]);
   double dt = 4.0;
+  
+  int outfreq = ntimes - 1;
+  if(argc > 2) outfreq = atoi(argv[2]);
 
   // ======================================================================== //
   //                           INITIALIZE VARIABLES                           //
@@ -47,7 +50,7 @@ int main(int argc, char *argv[])
   Propagate td(dt, grid);
 
   // Output
-  Output out(dt, 15);
+  Output out(dt, outfreq);
 
   // ======================================================================== //
   //                                  TIME LOOP                               //
@@ -64,15 +67,21 @@ int main(int argc, char *argv[])
     // update collision terms
     coll.calColl(green, sig, it); 
     
-    if(it == 0) out.write_line(0, grid, green, sig, coll);
+    // output
+    out.write_line(it, grid, green, sig, coll);
+    out.write_distrib(it, grid, green);
 
     // update Green functions
     td.stepping(green, coll, sig, grid, it);
     
-    // output
-    out.write_line(it + 1, grid, green, sig, coll);
   }
   
+  // last step
+  sig.calSigfk(grid, green, ntimes-1);
+  sig.calSig(grid, green, ntimes-1);
+  coll.calColl(green, sig, ntimes-1); 
+  out.write_line(ntimes-1, grid, green, sig, coll);
+  out.write_distrib(ntimes-1, grid, green);
   out.write_ender(start_time);
 
   return 0;

@@ -52,16 +52,38 @@ void Output::write_line(int it, const Grid &grid,  const GF &green, const Sigma 
   TEn = KEn + PEn_mf + PEn_corr;
 
   // quadrupole moment of the distribution
+  // Q(t) = 1/density * sqrt(5/16/pi) * 2/(2*pi)^3 int d^3p f(p, t) * [2*pz^2 - px^2 - py^2]
   Qm = 0.0;
+  for(int iq = 0; iq < nq; iq++)
+    Qm += green.gle(iq, it, it).imag() * (2.0*grid.mesh[iq*3 + 2]*grid.mesh[iq*3 + 2]
+                                   - grid.mesh[iq*3]*grid.mesh[iq*3] - grid.mesh[iq*3 + 1]*grid.mesh[iq*3 + 1]);
+  Qm *= scal * aindb * aindb * sqrt(5.0/16.0/pi) / density;
 
+  // write to stdout
   cout << setiosflags(ios::right) << setprecision(6) << setiosflags(ios::fixed);
   cout << setw(12) << t << setw(12) << density << setw(12) << Qm << setw(12)
        << setw(12) << TEn << setw(12) << KEn << setw(12) << PEn_mf << setw(12) << PEn_corr << endl;
 
 }
 
-void Output::write_distrib(int it)
+void Output::write_distrib(int it, const Grid &grid, const GF &green)
 {
+  if(it % outfreq == 0){
+    double *fp = new double[grid.n]();
+    for(int iq = 0; iq < grid.nq; iq++)
+      fp[grid.idxmap[iq]] = green.gle(iq, it, it).imag();
+    ofstream of("distribution_" + to_string(it), ios::out);
+    int nfft = grid.nfft;
+    of << setiosflags(ios::right) << setprecision(6) << setiosflags(ios::fixed);
+    for(int i = 0; i < nfft; i++){
+      for(int j = 0; j < nfft; j++){
+        for(int k = 0; k < nfft; k++) of << setw(10) << fp[i*nfft*nfft + j*nfft + k];
+      }
+    }
+    of.close();
+
+    delete[] fp;
+  }
 }
 
 void Output::write_ender(double start_time)
