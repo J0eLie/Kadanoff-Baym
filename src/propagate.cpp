@@ -6,7 +6,6 @@ void Propagate::epprop(Grid &grid) {
   utkc = new complex<double>[nq];
   utkconj = new complex<double>[nq];
   utkcconj = new complex<double>[nq];
-  double amee = 0.067;
   double h2m2 = h2m02 / amee;
   double epsp;
   for(int iq = 1; iq < nq; iq++){
@@ -53,7 +52,7 @@ void Propagate::stepping(GF &gf, Collision &coll, Sigma &sig, Grid &grid, int it
   }
 
   // update self-energies
-  /*sig.calSigfk(grid, gf, it+1);
+  sig.calSigfk(grid, gf, it+1);
   sig.calSig(grid, gf, it+1);
     
   // save collision terms at time T
@@ -86,9 +85,9 @@ void Propagate::stepping(GF &gf, Collision &coll, Sigma &sig, Grid &grid, int it
   // time-axis diagonal
   for(int iq = 0; iq < nq; iq++){
     gf.gre[(it+1)*dim1 + (it+1)*nq + iq] = gf.gre[it*dim1 + it*nq + iq] 
-                                           + iu*dtoverhbar*0.5*(coll.Ile[it*nq + iq] + coll.Ilesave[it*nq + iq] 
-                                           - coll.Igr[it*nq + iq] - coll.Igrsave[it*nq + iq]);
-  }*/
+                                           + iu*dtoverhbar*0.5*(coll.Ile[(it+1)*nq + iq] + coll.Ilesave[it*nq + iq] 
+                                           - coll.Igr[(it+1)*nq + iq] - coll.Igrsave[it*nq + iq]);
+  }
 
   return;
 }

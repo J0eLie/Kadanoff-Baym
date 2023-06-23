@@ -13,6 +13,7 @@ const std::complex<double> iu(0.0, 1.0);
 const double e2 = 14.3997; // eV*Ang
 const double hbar = 0.658212; // eV*fs
 const double h2m02 = 3.80998; // eV*Ang*Ang
+const double amee = 0.067; // effective mass 
 
 const double epsilon_b = 12.9980;
 const double eryd = 0.42e-2; // one exciton Rydberg (Ry) in eV

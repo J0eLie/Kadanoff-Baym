@@ -22,8 +22,8 @@ class GF
                                   //                   = G^> , it1 > it2
     void init_elec(Grid &grid);
   
-    complex<double> gle(int iq, int it1, int it2);
-    complex<double> ggr(int iq, int it1, int it2);
+    complex<double> gle(int iq, int it1, int it2) const;
+    complex<double> ggr(int iq, int it1, int it2) const;
 
     void put_into_fftbox(complex<double> *fftbox, int *idxmap, int it1, int it2);
     

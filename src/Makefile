@@ -1,5 +1,6 @@
 CC = icpc
 CFLAGS = -diag-disable=10441 -O3 -std=c++11
+#-D_DEBUG
 #OMP = -qopenmp
 OMP =
 
@@ -13,6 +14,7 @@ SRC = grid.cpp \
 			sigma.cpp \
 			collision.cpp \
 			propagate.cpp \
+			output.cpp \
 			fft.cpp
 
 OBJ = $(SRC:%.cpp=%.o)

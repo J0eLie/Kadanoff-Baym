@@ -1,11 +1,11 @@
 #include "gf.h"
 
-complex<double> GF::gle(int iq, int it1, int it2) {
+complex<double> GF::gle(int iq, int it1, int it2) const {
   if(it1 <= it2) return gre[it1*nt*nq + it2*nq + iq];
   return -conj(gre[it2*nt*nq + it1*nq + iq]);
 }
 
-complex<double> GF::ggr(int iq, int it1, int it2) {
+complex<double> GF::ggr(int iq, int it1, int it2) const {
   if(it1 > it2) return gre[it1*nt*nq + it2*nq + iq];
   if(it1 == it2) return -iu + gre[it1*nt*nq + it2*nq + iq];
   return -conj(gre[it2*nt*nq + it1*nq + iq]);
@@ -26,7 +26,6 @@ void GF::init_elec(Grid &grid) { // G^<(p, 0, 0) = i*f(p,0)
   double rgam = 0.0194;
   double rgam1 = 6.85;
   double rgam2 = 2.1;
-  double amee = 0.067;
 
   gre[0] = iu*2.0/3.0*ra*exp(-0.5*rhb*rhb/rgam/rgam);
   double cost2;

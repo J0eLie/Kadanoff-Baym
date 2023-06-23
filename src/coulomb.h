@@ -8,7 +8,7 @@
 class Coulomb
 {
   public:
-    double kappa=0.003030303030303; // screening parameter
+    double kappa=0.4/aindb; // screening parameter
     double *V=nullptr; // statically screened Coulomb potential; n
     double *Vfk=nullptr; // Unscreened Coulomb potential; n
 
