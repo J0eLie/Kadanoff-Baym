@@ -1,7 +1,7 @@
 CC = icpc
 CFLAGS = -diag-disable=10441 -O3 -std=c++11
-#OMP = -qopenmp
-OMP =
+OMP = -qopenmp
+#OMP =
 
 INC = -I$(MKLROOT)/include -I$(MKLROOT)/include/fftw/include
 

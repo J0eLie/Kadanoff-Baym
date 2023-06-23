@@ -2,6 +2,7 @@
 #define propagate_h
 
 #include <complex>
+#include <omp.h>
 #include "grid.h"
 #include "gf.h"
 #include "sigma.h"

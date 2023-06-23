@@ -3,6 +3,7 @@
 
 #include <complex>
 #include <algorithm>
+#include <omp.h>
 #include "gf.h"
 #include "sigma.h"
 #include "constants.h"

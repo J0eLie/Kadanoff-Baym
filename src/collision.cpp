@@ -5,6 +5,7 @@ void Collision::calColl(GF &gf, Sigma &sig, int it) { // calculate the collision
   // Ile
   // Hartree-Fock part G^<(p, t1, T)*Sigma^HF(p, T)
   for(int it1 = 0; it1 <= it; it1++){
+#pragma omp parallel for
     for(int iq = 0; iq < nq; iq++)
       Ile_hf[it1*nq + iq] = gf.gle(iq, it1, it) * sig.sfk[iq];
   }
@@ -14,6 +15,7 @@ void Collision::calColl(GF &gf, Sigma &sig, int it) { // calculate the collision
   fill_n(Ile, (it+1)*nq, complex<double>(0.0, 0.0));
   // int_t0^t1 dt/hbar [G^>(p, t1, t) - G^<(p, t1, t)]*Sigma^<(p, t, T)
   for(int it1 = 1; it1 <= it; it1++){
+#pragma omp parallel for
     for(int iq = 0; iq < nq; iq++){
       Ile[it1*nq + iq] += 0.5*dtoverhbar*(gf.ggr(iq, it1, 0) - gf.gle(iq, it1, 0))*sig.sle[iq];
       Ile[it1*nq + iq] += 0.5*dtoverhbar*(gf.ggr(iq, it1, it1) - gf.gle(iq, it1, it1))*sig.sle[it1*nq + iq];
@@ -26,6 +28,7 @@ void Collision::calColl(GF &gf, Sigma &sig, int it) { // calculate the collision
   // - int_t0^T dt/hbar G^<(p, t1, t)*(Sigma^>(p, t, T) - Sigma^<(p, t, T))
   if(it > 0){
     for(int it1 = 0; it1 <= it; it1++){
+#pragma omp parallel for
       for(int iq = 0; iq < nq; iq++){
         Ile[it1*nq + iq] += 0.5*dtoverhbar*gf.gle(iq, it1, 0)*(conj(sig.sgr[iq]) + sig.sle[iq]);
         Ile[it1*nq + iq] += 0.5*dtoverhbar*gf.gle(iq, it1, it)*(conj(sig.sgr[it*nq + iq]) + sig.sle[it*nq + iq]);
@@ -39,6 +42,7 @@ void Collision::calColl(GF &gf, Sigma &sig, int it) { // calculate the collision
   // Igr
   // Sigma^HF(p, T) * G^>(p, T, t2)
   for(int it2 = 0; it2 <= it; it2++){
+#pragma omp parallel for
     for(int iq = 0; iq < nq; iq++)
       Igr_hf[it2*nq + iq] = gf.ggr(iq, it, it2) * sig.sfk[iq];
   }
@@ -47,6 +51,7 @@ void Collision::calColl(GF &gf, Sigma &sig, int it) { // calculate the collision
   // int_t0^T dt/hbar (Sigma^>(p, T, t) - Sigma^<(p, T, t))*G^>(p, t, t2)
   if(it > 0){
     for(int it2 = 0; it2 <= it; it2++){
+#pragma omp parallel for
       for(int iq = 0; iq < nq; iq++){
         Igr[it2*nq + iq] += 0.5*dtoverhbar*(sig.sgr[iq] + conj(sig.sle[iq]))*gf.ggr(iq, 0, it2);
         Igr[it2*nq + iq] += 0.5*dtoverhbar*(sig.sgr[it*nq+iq] + conj(sig.sle[it*nq+iq]))*gf.ggr(iq, it, it2);
@@ -59,6 +64,7 @@ void Collision::calColl(GF &gf, Sigma &sig, int it) { // calculate the collision
 
   // - int_t0^t2 dt/hbar Sigma^>(p, T, t)*(G^>(p, t, t2) - G^<(p, t, t2))
   for(int it2 = 1; it2 <= it; it2++){
+#pragma omp parallel for
     for(int iq = 0; iq < nq; iq++){
       Igr[it2*nq + iq] -= 0.5*dtoverhbar*sig.sgr[iq]*(gf.ggr(iq, 0, it2) - gf.gle(iq, 0, it2));
       Igr[it2*nq + iq] -= 0.5*dtoverhbar*sig.sgr[it2*nq + iq]*(gf.ggr(iq, it2, it2) - gf.gle(iq, it2, it2));

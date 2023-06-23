@@ -8,6 +8,7 @@ void Propagate::epprop(Grid &grid) {
   utkcconj = new complex<double>[nq];
   double h2m2 = h2m02 / amee;
   double epsp;
+#pragma omp parallel for private(epsp)
   for(int iq = 1; iq < nq; iq++){
     epsp = h2m2*grid.p2[grid.idxmap[iq]];
     utk[iq] = exp(iu*epsp*dt/hbar);
@@ -33,20 +34,24 @@ void Propagate::stepping(GF &gf, Collision &coll, Sigma &sig, Grid &grid, int it
   int dim1 = nt*nq;
   // time-axis t2
   for(int it1 = 0; it1 <= it; it1++){
+#pragma omp parallel for
     for(int iq = 0; iq < nq; iq++){
       gf.gre[it1*dim1 + (it+1)*nq + iq] = utk[iq] * gf.gre[it1*dim1 + it*nq + iq] + utkc[iq]*(coll.Ile[it1*nq + iq] + coll.Ile_hf[it1*nq + iq]);
     }
   }
   // time-axis t1
   for(int it2 = 0; it2 < it; it2++){
+#pragma omp parallel for
     for(int iq = 0; iq < nq; iq++){
       gf.gre[(it+1)*dim1 + it2*nq + iq] = utkconj[iq] * gf.gre[it*dim1 + it2*nq + iq] + utkcconj[iq]*(coll.Igr[it2*nq + iq] + coll.Igr_hf[it2*nq + iq]);
     }
   }
+#pragma omp parallel for
   for(int iq = 0; iq < nq; iq++){
     gf.gre[(it+1)*dim1 + it*nq + iq] = utkconj[iq] * (gf.gre[it*dim1 + it*nq + iq] - iu) + utkcconj[iq]*(coll.Igr[it*nq + iq] + coll.Igr_hf[it*nq + iq]);
   }
   // time-axis diagonal
+#pragma omp parallel for
   for(int iq = 0; iq < nq; iq++){
     gf.gre[(it+1)*dim1 + (it+1)*nq + iq] = gf.gre[it*dim1 + it*nq + iq] + iu*dtoverhbar*(coll.Ile[it*nq + iq] - coll.Igr[it*nq + iq]);
   }
@@ -63,6 +68,7 @@ void Propagate::stepping(GF &gf, Collision &coll, Sigma &sig, Grid &grid, int it
   // Second pass
   // time-axis t2
   for(int it1 = 0; it1 <= it; it1++){
+#pragma omp parallel for
     for(int iq = 0; iq < nq; iq++){
       gf.gre[it1*dim1 + (it+1)*nq + iq] = utk[iq] * gf.gre[it1*dim1 + it*nq + iq] 
                                           + utkc[iq]*0.5*(coll.Ile[it1*nq + iq] + coll.Ilesave[it1*nq + iq]
@@ -71,18 +77,21 @@ void Propagate::stepping(GF &gf, Collision &coll, Sigma &sig, Grid &grid, int it
   }
   // time-axis t1
   for(int it2 = 0; it2 < it; it2++){
+#pragma omp parallel for
     for(int iq = 0; iq < nq; iq++){
       gf.gre[(it+1)*dim1 + it2*nq + iq] = utkconj[iq] * gf.gre[it*dim1 + it2*nq + iq] 
                                           + utkcconj[iq]*0.5*(coll.Igr[it2*nq + iq] + coll.Igrsave[it2*nq + iq]
                                           + coll.Igr_hf[it2*nq + iq] + coll.Igrsave_hf[it2*nq + iq]);
     }
   }
+#pragma omp parallel for
   for(int iq = 0; iq < nq; iq++){
     gf.gre[(it+1)*dim1 + it*nq + iq] = utkconj[iq] * (gf.gre[it*dim1 + it*nq + iq] - iu) 
                                        + utkcconj[iq]*0.5*(coll.Igr[it*nq + iq] + coll.Igrsave[it*nq + iq]
                                        + coll.Igr_hf[it*nq + iq] + coll.Igrsave_hf[it*nq + iq]);
   }
   // time-axis diagonal
+#pragma omp parallel for
   for(int iq = 0; iq < nq; iq++){
     gf.gre[(it+1)*dim1 + (it+1)*nq + iq] = gf.gre[it*dim1 + it*nq + iq] 
                                            + iu*dtoverhbar*0.5*(coll.Ile[(it+1)*nq + iq] + coll.Ilesave[it*nq + iq] 

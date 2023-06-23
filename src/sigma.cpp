@@ -8,10 +8,12 @@ void Sigma::calSigfk(Grid &grid, GF &gf, int it) { // Sigma_Fk(p, T) = i int d^3
   gf.put_into_fftbox(fftbox, grid.idxmap, it, it);
   zfft3(fftbox, nmesh);
   complex<double> *Vtmp = new complex<double>[n];
+#pragma omp parallel for
   for(int i = 0; i < n; i++) Vtmp[i] = pot->Vfk[i];
   zfft3(Vtmp, nmesh);
   
   int j1, j2, j3;
+#pragma omp parallel for private(j1, j2, j3)
   for(int i1 = 0; i1 < nfft; i1++){
     j1 = (nfft - i1) % nfft;
     for(int i2 = 0; i2 < nfft; i2++){
@@ -26,6 +28,7 @@ void Sigma::calSigfk(Grid &grid, GF &gf, int it) { // Sigma_Fk(p, T) = i int d^3
 
   zifft3(fftbox, nmesh);
 
+#pragma omp parallel for
   for(int iq = 0; iq < nq; iq++) sfk[iq] = fftbox[grid.idxmap[iq]].imag();
   delete[] fftbox;
   double dp = grid.dp;
@@ -51,11 +54,13 @@ void Sigma::calSig(Grid &grid, GF &gf, int it) {
     zfft3(gle, nmesh);
     gf.put_into_fftbox(ggr, grid.idxmap, it, itb);
     if(itb == it){
+#pragma omp parallel for
       for(int iq = 0; iq < nq; iq++) ggr[grid.idxmap[iq]] -= iu;
     }
     zfft3(ggr, nmesh);
     
     int j1, j2, j3;
+#pragma omp parallel for private(j1, j2, j3)
     for(int i1 = 0; i1 < nfft; i1++){
       j1 = (nfft - i1) % nfft;
       for(int i2 = 0; i2 < nfft; i2++){
@@ -70,9 +75,11 @@ void Sigma::calSig(Grid &grid, GF &gf, int it) {
     zifft3(hp, nmesh);
     cblas_zdscal(n, scal, hp, 1); // hp(p) = int d^3p1/(2*pi)^3 G^<(p1-p) * G^>(p1)
     
+#pragma omp parallel for
     for(int i = 0; i < n; i++) hp[i] *= pot->V[i] * pot->V[i];
     zfft3(hp, nmesh);
 
+#pragma omp parallel for private(j1, j2, j3)
     for(int i1 = 0; i1 < nfft; i1++){
       j1 = (nfft - i1) % nfft;
       for(int i2 = 0; i2 < nfft; i2++){
@@ -86,9 +93,11 @@ void Sigma::calSig(Grid &grid, GF &gf, int it) {
     }
 
     zifft3(gle, nmesh);
+#pragma omp parallel for
     for(int iq = 0; iq < nq; iq++) sle[itb*nq + iq] = gle[grid.idxmap[iq]];
     cblas_zdscal(nq, 2.0*scal, sle + itb*nq, 1);
     zifft3(ggr, nmesh);
+#pragma omp parallel for
     for(int iq = 0; iq < nq; iq++) sgr[itb*nq + iq] = ggr[grid.idxmap[iq]];
     cblas_zdscal(nq, 2.0*scal, sgr + itb*nq, 1);
   }

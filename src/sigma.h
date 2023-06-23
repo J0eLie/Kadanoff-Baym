@@ -3,6 +3,7 @@
 
 #include <complex>
 #include <algorithm> // fill_n
+#include <omp.h>
 #include "grid.h"
 #include "gf.h"
 #include "coulomb.h"
