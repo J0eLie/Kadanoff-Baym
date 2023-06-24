@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
   Output out(dt, outfreq);
 
   // ======================================================================== //
-  //                                  TIME LOOP                               //
+  //                             TIME PROPAGATION                             //
   // ======================================================================== // 
   
   double start_time = out.write_header();
