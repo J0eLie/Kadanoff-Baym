@@ -31,9 +31,11 @@ Grid::Grid(int nfft_, int idim_, double dp_) {
   
   nq = iq;
   idxmap = new int[nq];
+#pragma omp parallel for
   for(int iq = 0; iq < nq; iq++) idxmap[iq] = idxmap_t[iq];
   delete[] idxmap_t;
   mesh = new double[nq*3];
+#pragma omp parallel for
   for(int iq = 0; iq < nq; iq++){
     for(int i = 0; i < 3; i++){
       mesh[iq*3 + i] = mesh_t[iq*3 + i];

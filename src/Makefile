@@ -18,13 +18,15 @@ SRC = grid.cpp \
 
 OBJ = $(SRC:%.cpp=%.o)
 
-all : KadanoffBaym
+EXE = KadanoffBaym
 
-KadanoffBaym : main.o $(OBJ)
+all : $(EXE)
+
+$(EXE) : main.o $(OBJ)
 	$(CC) $(CFLAGS) $(OMP) $(LIB) $(^F) -o $@
 
 %.o : %.cpp
 	$(CC) $(CFLAGS) $(OMP) $(INC) -c $(<F) -o $(@F)
 
 clean :
-	rm -f KadanoffBaym *.o
+	rm -f $(EXE) *.o

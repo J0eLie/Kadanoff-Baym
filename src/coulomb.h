@@ -1,6 +1,7 @@
 #ifndef coulomb_h
 #define coulomb_h
 
+#include <omp.h>
 #include "grid.h"
 #include "gf.h"
 #include "constants.h"

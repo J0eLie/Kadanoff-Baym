@@ -1,6 +1,8 @@
 #ifndef grid_h
 #define grid_h
 
+#include <omp.h>
+
 class Grid
 {
   public:

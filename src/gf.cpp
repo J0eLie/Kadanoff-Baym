@@ -13,6 +13,7 @@ complex<double> GF::ggr(int iq, int it1, int it2) const {
 
 void GF::put_into_fftbox(complex<double> *fftbox, int *idxmap, int it1, int it2) { // fftbox : nfft x nfft x nfft, row-major
                                                                                    // should be filled with zeros before
+#pragma omp parallel for
   for(int iq = 0; iq < nq; iq++){
     fftbox[idxmap[iq]] = gre[it1*nt*nq + it2*nq + iq];
   }

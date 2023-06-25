@@ -4,6 +4,7 @@ void Coulomb::potcoul(Grid &grid) { // V(p) = 4*pi*e2/eps_b / (p^2 + kappa^2)
   int n = grid.n;
   V = new double[n];
   double coul = fpi*e2/epsilon_b;
+#pragma omp parallel for
   for(int iq = 0; iq < n; iq++){
     V[iq] = coul / (grid.p2[iq] + kappa*kappa);
   }
@@ -17,6 +18,7 @@ void Coulomb::potcoul_fk(Grid &grid) { // Vfk(p) = 4*pi*e2/eps_b / p^2 , |p| > 0
   Vfk = new double[n];
   double coul = fpi*e2/epsilon_b;
   Vfk[0] = 2.0 * coul * (pi + 0.69546) / (grid.dp*grid.dp);
+#pragma omp parallel for
   for(int iq = 1; iq < n; iq++){
     Vfk[iq] = coul / grid.p2[iq];
   }

@@ -3,6 +3,7 @@
 
 #include <complex>
 #include <cmath>
+#include <omp.h>
 #include "grid.h"
 #include "constants.h"
 
